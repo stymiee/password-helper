@@ -68,12 +68,19 @@ class Policy
 
     public function __construct(array $config = [])
     {
-        $this->minimumDigits       = abs((int) ($config['minimumDigits']       ?? self::MINIMUM_DIGITS          ));
-        $this->minimumLength       = abs((int) ($config['minimumLength']       ?? self::MINIMUM_LENGTH          ));
-        $this->minimumLetters      = abs((int) ($config['minimumLetters']      ?? self::MINIMUM_LETTERS         ));
-        $this->minimumLowercase    = abs((int) ($config['minimumLowercase']    ?? self::MINIMUM_LOWERCASE       ));
-        $this->minimumSpecialChars = abs((int) ($config['minimumSpecialChars'] ?? self::MINIMUM_SPECIAL_CHARS   ));
-        $this->minimumUppercase    = abs((int) ($config['minimumUppercase']    ?? self::MINIMUM_UPPERCASE       ));
+        $this->minimumDigits       = abs((int) ($config['minimumDigits']       ?? self::MINIMUM_DIGITS       ));
+        $this->minimumLowercase    = abs((int) ($config['minimumLowercase']    ?? self::MINIMUM_LOWERCASE    ));
+        $this->minimumSpecialChars = abs((int) ($config['minimumSpecialChars'] ?? self::MINIMUM_SPECIAL_CHARS));
+        $this->minimumUppercase    = abs((int) ($config['minimumUppercase']    ?? self::MINIMUM_UPPERCASE    ));
+
+        $minimumLetters            = abs((int) ($config['minimumLetters']      ?? self::MINIMUM_LETTERS      ));
+        $this->minimumLetters      = max([$minimumLetters, $this->minimumLowercase + $this->minimumUppercase]);
+
+        $minimumLength             = abs((int) ($config['minimumLength']       ?? self::MINIMUM_LENGTH       ));
+        $this->minimumLength       = max([
+            $minimumLength,
+            $this->minimumLetters + $this->minimumDigits + $this->minimumSpecialChars
+        ]);
     }
 
     /**
