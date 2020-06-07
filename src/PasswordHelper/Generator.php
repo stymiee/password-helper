@@ -11,13 +11,19 @@ class Generator
      */
     protected $policy;
 
-    public function __construct(Policy $policy)
+    /**
+     * @var Validator
+     */
+    protected $validator;
+
+    public function __construct(Policy $policy, Validator $validator)
     {
         $this->policy = $policy;
+        $this->validator = $validator;
     }
 
     /**
-     *  Generates a random password that meets the criteria set forth by the password policy
+     * Generates a random password that meets the criteria set forth by the password policy
      *
      * @return string
      *
@@ -32,8 +38,11 @@ class Generator
         for ($i = 0; $i < $passwordLength; $i++) {
             $password .= $this->getRandomCharacter($characters);
         }
+        if ($this->validator->isValidPassword($password)) {
+            return $password;
+        }
 
-        return $password;
+        return $this->generatePassword();
     }
 
     /**
@@ -75,6 +84,6 @@ class Generator
     protected function getRandomCharacter(array $chars): string
     {
         shuffle($chars);
-        return $chars[random_int(0, count($chars) - 1)];
+        return (string) $chars[random_int(0, count($chars) - 1)];
     }
 }
