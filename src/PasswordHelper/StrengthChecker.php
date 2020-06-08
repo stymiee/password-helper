@@ -24,8 +24,8 @@ class StrengthChecker
     {
         $score = 0;
         $score += min([strlen($password), Policy::MINIMUM_LENGTH]);
+        $score += (int) (preg_match_all('/[a-z]/i', $password, $matches) >= 2);
         $score += (int) (bool) preg_match_all('/\d/', $password, $matches);
-        $score += (int) (bool) preg_match_all('/[a-z]/i', $password, $matches);
         $score += (int) (bool) preg_match_all('/[A-Z]/', $password, $matches);
         $score += (int) (bool) preg_match_all('/[a-z]/', $password, $matches);
         $score += (int) (bool) preg_match_all('/[^a-z\d ]/i', $password, $matches);
