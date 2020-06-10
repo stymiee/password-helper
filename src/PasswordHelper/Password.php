@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace PasswordHelper;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Password
 {
     /**
@@ -52,5 +55,15 @@ class Password
     public function verify(string $password, string $hash): bool
     {
         return password_verify($password, $hash);
+    }
+
+    public function getInfo(string $hash): array
+    {
+        return password_get_info($hash);
+    }
+
+    public function checkForRehash(string $hash): bool
+    {
+        return password_needs_rehash($hash, PASSWORD_DEFAULT);
     }
 }
