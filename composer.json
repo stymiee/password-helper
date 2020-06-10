@@ -1,7 +1,7 @@
 {
     "name": "stymiee/password-helper",
     "type": "library",
-    "description": "",
+    "description": "A PHP library that makes using best practices with passwords easy by default_",
     "keywords": [
         "PHP",
         "encryption",
