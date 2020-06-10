@@ -4,7 +4,7 @@ A PHP library that makes using best practices with passwords easy _by default_.
 
 ## Requirements
 
-- PHP 7.2+
+- PHP 5.6+
 
 ## Installation
 
