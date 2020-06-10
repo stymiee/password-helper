@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 
 class PolicyTest extends TestCase
 {
-    public function testDefaultValues(): void
+    public function testDefaultValues()
     {
         $policy = new Policy();
 
@@ -17,7 +17,7 @@ class PolicyTest extends TestCase
         $this->assertEquals(Policy::MINIMUM_UPPERCASE, $policy->getMinimumUppercase());
     }
 
-    public function testDigitsNotRequired(): void
+    public function testDigitsNotRequired()
     {
         $policy = new Policy([
             'minimumDigits' => 0
@@ -26,7 +26,7 @@ class PolicyTest extends TestCase
         $this->assertEquals(0, $policy->getMinimumDigits());
     }
 
-    public function testLowercaseNotRequired(): void
+    public function testLowercaseNotRequired()
     {
         $policy = new Policy([
             'minimumLowercase' => 0
@@ -36,7 +36,7 @@ class PolicyTest extends TestCase
         $this->assertEquals(0, $policy->getMinimumLowercase());
     }
 
-    public function testUppercaseNotRequired(): void
+    public function testUppercaseNotRequired()
     {
         $policy = new Policy([
             'minimumUppercase' => 0
@@ -46,7 +46,7 @@ class PolicyTest extends TestCase
         $this->assertEquals(0, $policy->getMinimumUppercase());
     }
 
-    public function testSpecialCharsNotRequired(): void
+    public function testSpecialCharsNotRequired()
     {
         $policy = new Policy([
             'minimumSpecialChars' => 0
@@ -55,7 +55,7 @@ class PolicyTest extends TestCase
         $this->assertEquals(0, $policy->getMinimumSpecialChars());
     }
 
-    public function dataProviderForMinLetters(): array
+    public function dataProviderForMinLetters()
     {
         return [
             [0, 0, 0],
@@ -72,7 +72,7 @@ class PolicyTest extends TestCase
      * @param $upper
      * @param $total
      */
-    public function testMinimumLettersNeverLessThanTotalLetters(int $lower, int $upper, int $total): void
+    public function testMinimumLettersNeverLessThanTotalLetters($lower, $upper, $total)
     {
         $policy = new Policy([
             'minimumLetters' => 0,
@@ -83,7 +83,7 @@ class PolicyTest extends TestCase
         $this->assertEquals($total, $policy->getMinimumLetters());
     }
 
-    public function dataProviderForMinLength(): array
+    public function dataProviderForMinLength()
     {
         return [
             [0, 0, 0, 0, 0, Policy::MINIMUM_LENGTH],
@@ -98,14 +98,14 @@ class PolicyTest extends TestCase
     /**
      * @dataProvider dataProviderForMinLength
      *
-     * @param int $letters
-     * @param int $lower
-     * @param int $upper
-     * @param int $digits
-     * @param int $special
-     * @param int $total
+     * @param $letters
+     * @param $lower
+     * @param $upper
+     * @param $digits
+     * @param $special
+     * @param $total
      */
-    public function testMinimumLengthNeverLessThanTotalChars(int $letters, int $lower, int $upper, int $digits, int $special, int $total): void
+    public function testMinimumLengthNeverLessThanTotalChars($letters, $lower, $upper, $digits, $special, $total)
     {
         $policy = new Policy([
             'minimumLetters' => $letters,
@@ -118,7 +118,7 @@ class PolicyTest extends TestCase
         $this->assertEquals($total, $policy->getMinimumLength());
     }
 
-    public function testNegativeValues(): void
+    public function testNegativeValues()
     {
         $policy = new Policy([
             'minimumLetters' => -5,
@@ -137,7 +137,7 @@ class PolicyTest extends TestCase
         $this->assertEquals(2, $policy->getMinimumUppercase());
     }
 
-    public function testFloatValues(): void
+    public function testFloatValues()
     {
         $policy = new Policy([
             'minimumLetters' => 5.8,

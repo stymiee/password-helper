@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace PasswordHelper;
 
 class Generator
@@ -29,7 +27,7 @@ class Generator
      *
      * @throws \Exception
      */
-    public function generatePassword(): string
+    public function generatePassword()
     {
         $characters = $this->getAvailableCharacters();
         $passwordLength = $this->policy->getMinimumLength();
@@ -50,7 +48,7 @@ class Generator
      *
      * @return array
      */
-    protected function getAvailableCharacters(): array
+    protected function getAvailableCharacters()
     {
         $chars = [];
         if ($this->policy->getMinimumDigits()) {
@@ -81,9 +79,9 @@ class Generator
      *
      * @throws \Exception
      */
-    protected function getRandomCharacter(array $chars): string
+    protected function getRandomCharacter(array $chars)
     {
         shuffle($chars);
-        return (string) $chars[random_int(0, count($chars) - 1)];
+        return (string) $chars[mt_rand(0, count($chars) - 1)];
     }
 }

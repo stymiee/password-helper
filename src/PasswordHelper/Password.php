@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace PasswordHelper;
 
 /**
@@ -24,7 +22,7 @@ class Password
      */
     protected $validator;
 
-    public function __construct(array $config = [])
+    public function __construct($config = [])
     {
         $policy = new Policy($config);
         $this->checker = new StrengthChecker();
@@ -32,37 +30,37 @@ class Password
         $this->generator = new Generator($policy, $this->validator);
     }
 
-    public function generate(): string
+    public function generate()
     {
         return $this->generator->generatePassword();
     }
 
-    public function validateComplexity(string $password): bool
+    public function validateComplexity($password)
     {
         return $this->validator->isValidPassword($password);
     }
 
-    public function checkStrength(string $password): string
+    public function checkStrength($password)
     {
         return $this->checker->checkStrength($password);
     }
 
-    public function hash(string $password): string
+    public function hash($password)
     {
         return password_hash($password, PASSWORD_DEFAULT);
     }
 
-    public function verify(string $password, string $hash): bool
+    public function verify($password, $hash)
     {
         return password_verify($password, $hash);
     }
 
-    public function getInfo(string $hash): array
+    public function getInfo($hash)
     {
         return password_get_info($hash);
     }
 
-    public function checkForRehash(string $hash): bool
+    public function checkForRehash($hash)
     {
         return password_needs_rehash($hash, PASSWORD_DEFAULT);
     }

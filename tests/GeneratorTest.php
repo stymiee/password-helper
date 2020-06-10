@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class GeneratorTest extends TestCase
 {
-    public function dataProviderForGeneratePassword(): array
+    public function dataProviderForGeneratePassword()
     {
         return [
             [new Policy(['minimumLowercase' => 0]), true, false, true, true],
@@ -27,7 +27,7 @@ class GeneratorTest extends TestCase
      * @param bool $upper
      * @param bool $special
      */
-    public function testGeneratePassword(Policy $policy, bool $digits, bool $lower, bool $upper, bool $special): void
+    public function testGeneratePassword($policy, $digits, $lower, $upper, $special)
     {
         $generator = new Generator($policy, new Validator($policy));
         $password = $generator->generatePassword();
@@ -39,7 +39,7 @@ class GeneratorTest extends TestCase
         $this->assertEquals((bool) preg_match_all('/[^a-z\d ]/i', $password, $m), $special);
     }
 
-    public function dataProviderForAvailableCharacters(): array
+    public function dataProviderForAvailableCharacters()
     {
         $digits = range(0, 9);
         $lowercase = range('a', 'z');
@@ -62,7 +62,7 @@ class GeneratorTest extends TestCase
      * @param Policy $policy
      * @param array $chars
      */
-    public function testGetAvailableCharacters(Policy $policy, array $chars): void
+    public function testGetAvailableCharacters($policy, $chars)
     {
         $class = new Generator($policy, new Validator($policy));
         $reflectionMethod = new \ReflectionMethod(Generator::class, 'getAvailableCharacters');
@@ -70,7 +70,7 @@ class GeneratorTest extends TestCase
         $this->assertEquals($reflectionMethod->invoke($class), $chars);
     }
 
-    public function dataProviderForRandomChars(): array
+    public function dataProviderForRandomChars()
     {
         return [
             [range(0, 9)],
@@ -85,7 +85,7 @@ class GeneratorTest extends TestCase
      *
      * @param array $chars
      */
-    public function testGetRandomCharacter(array $chars): void
+    public function testGetRandomCharacter(array $chars)
     {
         $policy = new Policy();
         $class = new Generator($policy, new Validator($policy));

@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace PasswordHelper;
 
 class Validator
@@ -23,7 +21,7 @@ class Validator
      *
      * @return bool
      */
-    public function isValidPassword(string $password): bool
+    public function isValidPassword($password)
     {
         $password = trim($password);
         return $this->meetsMinimumDigits($password) &&
@@ -41,7 +39,7 @@ class Validator
      *
      * @return bool
      */
-    protected function meetsMinimumLength(string $password): bool
+    protected function meetsMinimumLength($password)
     {
         return strlen($password) >= $this->policy->getMinimumLength();
     }
@@ -53,7 +51,7 @@ class Validator
      *
      * @return bool
      */
-    protected function meetsMinimumDigits(string $password): bool
+    protected function meetsMinimumDigits($password)
     {
         if ($this->policy->getMinimumDigits() === 0) {
             return true;
@@ -68,7 +66,7 @@ class Validator
      *
      * @return bool
      */
-    protected function meetsMinimumLetters(string $password): bool
+    protected function meetsMinimumLetters($password)
     {
         if ($this->policy->getMinimumLetters() === 0) {
             return true;
@@ -83,7 +81,7 @@ class Validator
      *
      * @return bool
      */
-    protected function meetsMinimumUppercase(string $password): bool
+    protected function meetsMinimumUppercase($password)
     {
         if ($this->policy->getMinimumUppercase() === 0) {
             return true;
@@ -98,7 +96,7 @@ class Validator
      *
      * @return bool
      */
-    protected function meetsMinimumLowercase(string $password): bool
+    protected function meetsMinimumLowercase($password)
     {
         if ($this->policy->getMinimumLowercase() === 0) {
             return true;
@@ -113,7 +111,7 @@ class Validator
      *
      * @return bool
      */
-    protected function meetsMinimumSpecialChars(string $password): bool
+    protected function meetsMinimumSpecialChars($password)
     {
         if ($this->policy->getMinimumSpecialChars() === 0) {
             return true;

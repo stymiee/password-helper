@@ -1,12 +1,11 @@
 <?php
 
-use PasswordHelper\Policy;
 use PasswordHelper\StrengthChecker;
 use PHPUnit\Framework\TestCase;
 
 class StrengthCheckerTest extends TestCase
 {
-    public function dataProvider(): array
+    public function dataProvider()
     {
         return [
             ['', 'Very Weak'],
@@ -32,7 +31,7 @@ class StrengthCheckerTest extends TestCase
      * @param string $password
      * @param string $score
      */
-    public function testMinimumLettersNeverLessThanTotalLetters(string $password, string $score): void
+    public function testMinimumLettersNeverLessThanTotalLetters($password, $score)
     {
         $checker = new StrengthChecker();
 

@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace PasswordHelper;
 
 class StrengthChecker
@@ -20,7 +18,7 @@ class StrengthChecker
         $this->strength = 0;
     }
 
-    public function checkStrength(string $password): string
+    public function checkStrength($password)
     {
         $score = 0;
         $score += min([strlen($password), Policy::MINIMUM_LENGTH]);
