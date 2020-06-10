@@ -4,8 +4,8 @@
     "description": "A PHP library that makes using best practices with passwords easy by default",
     "keywords": [
         "PHP",
-        "encryption",
-        "openssl"
+        "passwords",
+        "security"
     ],
     "homepage": "https://github.com/stymiee/ppassword-helper",
     "license": "Apache-2.0",
