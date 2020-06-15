@@ -11,6 +11,9 @@ class StrengthChecker
      */
     protected $strength;
 
+    /**
+     * @var string[] Descriptions of levels of password strength
+     */
     protected $levels = [
         'Very Weak', 'Weak', 'Good', 'Very Good', 'Strong', 'Very Strong'
     ];
@@ -20,6 +23,13 @@ class StrengthChecker
         $this->strength = 0;
     }
 
+    /**
+     * Determines the strength of a given password
+     *
+     * @param string $password
+     *
+     * @return string
+     */
     public function checkStrength(string $password): string
     {
         $score = 0;
