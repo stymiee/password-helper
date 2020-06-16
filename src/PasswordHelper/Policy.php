@@ -82,6 +82,8 @@ class Policy
     }
 
     /**
+     * Returns the minimum number of numbers required in a password
+     *
      * @return int
      */
     public function getMinimumDigits()
@@ -90,6 +92,8 @@ class Policy
     }
 
     /**
+     * Returns the minimum number of characters required in a password
+     *
      * @return int
      */
     public function getMinimumLength()
@@ -98,6 +102,8 @@ class Policy
     }
 
     /**
+     * Returns the minimum number of letters required in a password
+     *
      * @return int
      */
     public function getMinimumLetters()
@@ -106,6 +112,8 @@ class Policy
     }
 
     /**
+     * Returns the minimum number of lowercase letters required in a password
+     *
      * @return int
      */
     public function getMinimumLowercase()
@@ -114,6 +122,8 @@ class Policy
     }
 
     /**
+     * Returns the minimum number of special characters required in a password
+     *
      * @return int
      */
     public function getMinimumSpecialChars()
@@ -122,6 +132,8 @@ class Policy
     }
 
     /**
+     * Returns the minimum number of uppercase letters required in a password
+     *
      * @return int
      */
     public function getMinimumUppercase()

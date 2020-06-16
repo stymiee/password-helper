@@ -18,6 +18,13 @@ class StrengthChecker
         $this->strength = 0;
     }
 
+    /**
+     * Determines the strength of a given password
+     *
+     * @param string $password
+     *
+     * @return string
+     */
     public function checkStrength($password)
     {
         $score = 0;
