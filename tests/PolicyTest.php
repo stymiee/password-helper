@@ -9,12 +9,12 @@ class PolicyTest extends TestCase
     {
         $policy = new Policy();
 
-        $this->assertEquals(Policy::MINIMUM_DIGITS, $policy->getMinimumDigits());
-        $this->assertEquals(Policy::MINIMUM_LENGTH, $policy->getMinimumLength());
-        $this->assertEquals(2, $policy->getMinimumLetters());
-        $this->assertEquals(Policy::MINIMUM_LOWERCASE, $policy->getMinimumLowercase());
-        $this->assertEquals(Policy::MINIMUM_SPECIAL_CHARS, $policy->getMinimumSpecialChars());
-        $this->assertEquals(Policy::MINIMUM_UPPERCASE, $policy->getMinimumUppercase());
+        self::assertEquals(Policy::MINIMUM_DIGITS, $policy->getMinimumDigits());
+        self::assertEquals(Policy::MINIMUM_LENGTH, $policy->getMinimumLength());
+        self::assertEquals(2, $policy->getMinimumLetters());
+        self::assertEquals(Policy::MINIMUM_LOWERCASE, $policy->getMinimumLowercase());
+        self::assertEquals(Policy::MINIMUM_SPECIAL_CHARS, $policy->getMinimumSpecialChars());
+        self::assertEquals(Policy::MINIMUM_UPPERCASE, $policy->getMinimumUppercase());
     }
 
     public function testDigitsNotRequired()
@@ -23,7 +23,7 @@ class PolicyTest extends TestCase
             'minimumDigits' => 0
         ]);
 
-        $this->assertEquals(0, $policy->getMinimumDigits());
+        self::assertEquals(0, $policy->getMinimumDigits());
     }
 
     public function testLowercaseNotRequired()
@@ -32,8 +32,8 @@ class PolicyTest extends TestCase
             'minimumLowercase' => 0
         ]);
 
-        $this->assertEquals(1, $policy->getMinimumLetters());
-        $this->assertEquals(0, $policy->getMinimumLowercase());
+        self::assertEquals(1, $policy->getMinimumLetters());
+        self::assertEquals(0, $policy->getMinimumLowercase());
     }
 
     public function testUppercaseNotRequired()
@@ -42,8 +42,8 @@ class PolicyTest extends TestCase
             'minimumUppercase' => 0
         ]);
 
-        $this->assertEquals(1, $policy->getMinimumLetters());
-        $this->assertEquals(0, $policy->getMinimumUppercase());
+        self::assertEquals(1, $policy->getMinimumLetters());
+        self::assertEquals(0, $policy->getMinimumUppercase());
     }
 
     public function testSpecialCharsNotRequired()
@@ -52,7 +52,7 @@ class PolicyTest extends TestCase
             'minimumSpecialChars' => 0
         ]);
 
-        $this->assertEquals(0, $policy->getMinimumSpecialChars());
+        self::assertEquals(0, $policy->getMinimumSpecialChars());
     }
 
     public function dataProviderForMinLetters()
@@ -80,7 +80,7 @@ class PolicyTest extends TestCase
             'minimumUppercase' => $lower,
         ]);
 
-        $this->assertEquals($total, $policy->getMinimumLetters());
+        self::assertEquals($total, $policy->getMinimumLetters());
     }
 
     public function dataProviderForMinLength()
@@ -115,7 +115,7 @@ class PolicyTest extends TestCase
             'minimumSpecialChars' => $special
         ]);
 
-        $this->assertEquals($total, $policy->getMinimumLength());
+        self::assertEquals($total, $policy->getMinimumLength());
     }
 
     public function testNegativeValues()
@@ -129,12 +129,12 @@ class PolicyTest extends TestCase
             'minimumSpecialChars' => -2
         ]);
 
-        $this->assertEquals(2, $policy->getMinimumDigits());
-        $this->assertEquals(12, $policy->getMinimumLength());
-        $this->assertEquals(5, $policy->getMinimumLetters());
-        $this->assertEquals(2, $policy->getMinimumLowercase());
-        $this->assertEquals(2, $policy->getMinimumSpecialChars());
-        $this->assertEquals(2, $policy->getMinimumUppercase());
+        self::assertEquals(2, $policy->getMinimumDigits());
+        self::assertEquals(12, $policy->getMinimumLength());
+        self::assertEquals(5, $policy->getMinimumLetters());
+        self::assertEquals(2, $policy->getMinimumLowercase());
+        self::assertEquals(2, $policy->getMinimumSpecialChars());
+        self::assertEquals(2, $policy->getMinimumUppercase());
     }
 
     public function testFloatValues()
@@ -148,11 +148,11 @@ class PolicyTest extends TestCase
             'minimumSpecialChars' => 2.3
         ]);
 
-        $this->assertEquals(2, $policy->getMinimumDigits());
-        $this->assertEquals(12, $policy->getMinimumLength());
-        $this->assertEquals(5, $policy->getMinimumLetters());
-        $this->assertEquals(2, $policy->getMinimumLowercase());
-        $this->assertEquals(2, $policy->getMinimumSpecialChars());
-        $this->assertEquals(2, $policy->getMinimumUppercase());
+        self::assertEquals(2, $policy->getMinimumDigits());
+        self::assertEquals(12, $policy->getMinimumLength());
+        self::assertEquals(5, $policy->getMinimumLetters());
+        self::assertEquals(2, $policy->getMinimumLowercase());
+        self::assertEquals(2, $policy->getMinimumSpecialChars());
+        self::assertEquals(2, $policy->getMinimumUppercase());
     }
 }
