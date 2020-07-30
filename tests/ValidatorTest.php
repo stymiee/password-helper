@@ -35,7 +35,7 @@ class ValidatorTest extends TestCase
     {
         $validator = new Validator(new Policy());
 
-        $this->assertEquals($valid, $validator->isValidPassword($password));
+        self::assertEquals($valid, $validator->isValidPassword($password));
     }
 
     public function testMeetsMinimumDigitsIsZero(): void
@@ -43,7 +43,7 @@ class ValidatorTest extends TestCase
         $class = new Validator(new Policy(['minimumDigits' => 0]));
         $reflectionMethod = new \ReflectionMethod(Validator::class, 'meetsMinimumDigits');
         $reflectionMethod->setAccessible(true);
-        $this->assertTrue($reflectionMethod->invoke($class, 'azAZ!@'));
+        self::assertTrue($reflectionMethod->invoke($class, 'azAZ!@'));
     }
 
     public function testMeetsMinimumLettersIsZero(): void
@@ -55,7 +55,7 @@ class ValidatorTest extends TestCase
         ]));
         $reflectionMethod = new \ReflectionMethod(Validator::class, 'meetsMinimumLetters');
         $reflectionMethod->setAccessible(true);
-        $this->assertTrue($reflectionMethod->invoke($class, '123!@'));
+        self::assertTrue($reflectionMethod->invoke($class, '123!@'));
     }
 
     public function testMeetsMinimumLowercaseIsZero(): void
@@ -63,7 +63,7 @@ class ValidatorTest extends TestCase
         $class = new Validator(new Policy(['minimumLowercase' => 0]));
         $reflectionMethod = new \ReflectionMethod(Validator::class, 'meetsMinimumLowercase');
         $reflectionMethod->setAccessible(true);
-        $this->assertTrue($reflectionMethod->invoke($class, 'AZ!@'));
+        self::assertTrue($reflectionMethod->invoke($class, 'AZ!@'));
     }
 
     public function testMeetsMinimumUppercaseIsZero(): void
@@ -71,7 +71,7 @@ class ValidatorTest extends TestCase
         $class = new Validator(new Policy(['minimumUppercase' => 0]));
         $reflectionMethod = new \ReflectionMethod(Validator::class, 'meetsMinimumUppercase');
         $reflectionMethod->setAccessible(true);
-        $this->assertTrue($reflectionMethod->invoke($class, 'az!@'));
+        self::assertTrue($reflectionMethod->invoke($class, 'az!@'));
     }
 
     public function testMeetsMinimumSpecialCharsIsZero(): void
@@ -79,6 +79,6 @@ class ValidatorTest extends TestCase
         $class = new Validator(new Policy(['minimumSpecialChars' => 0]));
         $reflectionMethod = new \ReflectionMethod(Validator::class, 'meetsMinimumSpecialChars');
         $reflectionMethod->setAccessible(true);
-        $this->assertTrue($reflectionMethod->invoke($class, 'azAZ123'));
+        self::assertTrue($reflectionMethod->invoke($class, 'azAZ123'));
     }
 }

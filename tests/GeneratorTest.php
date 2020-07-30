@@ -32,11 +32,11 @@ class GeneratorTest extends TestCase
         $generator = new Generator($policy, new Validator($policy));
         $password = $generator->generatePassword();
 
-        $this->assertEquals($policy->getMinimumLength(), strlen($password));
-        $this->assertEquals((bool) preg_match_all('/\d/', $password, $m), $digits);
-        $this->assertEquals((bool) preg_match_all('/[a-z]/', $password, $m), $lower);
-        $this->assertEquals((bool) preg_match_all('/[A-Z]/', $password, $m), $upper);
-        $this->assertEquals((bool) preg_match_all('/[^a-z\d ]/i', $password, $m), $special);
+        self::assertEquals($policy->getMinimumLength(), strlen($password));
+        self::assertEquals((bool) preg_match_all('/\d/', $password, $m), $digits);
+        self::assertEquals((bool) preg_match_all('/[a-z]/', $password, $m), $lower);
+        self::assertEquals((bool) preg_match_all('/[A-Z]/', $password, $m), $upper);
+        self::assertEquals((bool) preg_match_all('/[^a-z\d ]/i', $password, $m), $special);
     }
 
     public function dataProviderForAvailableCharacters(): array
@@ -67,7 +67,7 @@ class GeneratorTest extends TestCase
         $class = new Generator($policy, new Validator($policy));
         $reflectionMethod = new \ReflectionMethod(Generator::class, 'getAvailableCharacters');
         $reflectionMethod->setAccessible(true);
-        $this->assertEquals($reflectionMethod->invoke($class), $chars);
+        self::assertEquals($reflectionMethod->invoke($class), $chars);
     }
 
     public function dataProviderForRandomChars(): array
@@ -91,6 +91,6 @@ class GeneratorTest extends TestCase
         $class = new Generator($policy, new Validator($policy));
         $reflectionMethod = new \ReflectionMethod(Generator::class, 'getRandomCharacter');
         $reflectionMethod->setAccessible(true);
-        $this->assertContains($reflectionMethod->invoke($class, $chars), $chars);
+        self::assertContains($reflectionMethod->invoke($class, $chars), $chars);
     }
 }

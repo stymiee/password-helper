@@ -36,6 +36,6 @@ class StrengthCheckerTest extends TestCase
     {
         $checker = new StrengthChecker();
 
-        $this->assertEquals($score, $checker->checkStrength($password));
+        self::assertEquals($score, $checker->checkStrength($password));
     }
 }
