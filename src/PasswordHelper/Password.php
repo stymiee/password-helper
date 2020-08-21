@@ -20,16 +20,36 @@ class Password
     protected $generator;
 
     /**
+     * @var Policy
+     */
+    private $policy;
+
+    /**
      * @var Validator
      */
     protected $validator;
 
     public function __construct(array $config = [])
     {
-        $policy = new Policy($config);
+        $this->policy = new Policy($config);
         $this->checker = new StrengthChecker();
-        $this->validator = new Validator($policy);
-        $this->generator = new Generator($policy, $this->validator);
+        $this->validator = new Validator($this->policy);
+        $this->generator = new Generator($this->policy, $this->validator);
+    }
+
+    /**
+     * @return array
+     */
+    public function __debugInfo(): array
+    {
+        return [
+            'minimumDigits' => $this->policy->getMinimumDigits(),
+            'minimumLowercase' => $this->policy->getMinimumLowercase(),
+            'minimumSpecialChars' => $this->policy->getMinimumSpecialChars(),
+            'minimumUppercase' => $this->policy->getMinimumUppercase(),
+            'minimumLetters' => $this->policy->getMinimumLetters(),
+            'minimumLength' => $this->policy->getMinimumLength(),
+        ];
     }
 
     /**
