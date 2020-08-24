@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace PasswordHelper;
 
+/**
+ * Class StrengthChecker
+ * @package PasswordHelper
+ */
 class StrengthChecker
 {
     /**

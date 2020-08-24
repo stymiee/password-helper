@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace PasswordHelper;
 
+/**
+ * Class Validator
+ * @package PasswordHelper
+ */
 class Validator
 {
     /**
