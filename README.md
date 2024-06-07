@@ -1,6 +1,6 @@
 [![Latest Stable Version](https://poser.pugx.org/stymiee/password-helper/v/stable.svg)](https://packagist.org/packages/stymiee/password-helper)
 [![Total Downloads](https://poser.pugx.org/stymiee/password-helper/downloads)](https://packagist.org/packages/stymiee/password-helper)
-![PHP Composer](https://github.com/stymiee/password-helper/workflows/PHP%20Composer/badge.svg?branch=master)
+![Build](https://github.com/stymiee/password-helper/actions/workflows/php.yml/badge.svg)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/stymiee/password-helper/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/stymiee/password-helper/?branch=master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/3b45bd94f090378ac5c6/maintainability)](https://codeclimate.com/github/stymiee/password-helper/maintainability)
 [![License](https://poser.pugx.org/stymiee/password-helper/license)](https://packagist.org/packages/stymiee/password-helper)
