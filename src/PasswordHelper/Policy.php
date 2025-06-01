@@ -5,71 +5,117 @@ declare(strict_types=1);
 namespace PasswordHelper;
 
 /**
- * Class Policy
+ * Defines and manages password policy requirements.
+ * 
+ * This class handles the configuration and validation of password requirements,
+ * including minimum lengths and character type requirements. It provides default
+ * values that follow security best practices but can be customized through
+ * configuration.
+ * 
  * @package PasswordHelper
  */
 class Policy
 {
     /**
-     * @var int default minimum number of numbers
+     * Default minimum number of digits required in a password.
+     *
+     * @var int
      */
     public const MINIMUM_DIGITS = 1;
 
     /**
-     * @var int default minimum password length
+     * Default minimum password length.
+     *
+     * @var int
      */
     public const MINIMUM_LENGTH = 10;
 
     /**
-     * @var int default minimum number of letters
+     * Default minimum number of letters required in a password.
+     *
+     * @var int
      */
     public const MINIMUM_LETTERS = 1;
 
     /**
-     * @var int default minimum number of lowercase letters
+     * Default minimum number of lowercase letters required in a password.
+     *
+     * @var int
      */
     public const MINIMUM_LOWERCASE = 1;
 
     /**
-     * @var int default minimum number of special characters
+     * Default minimum number of special characters required in a password.
+     *
+     * @var int
      */
     public const MINIMUM_SPECIAL_CHARS = 1;
 
     /**
-     * @var int default minimum number of uppercase letters
+     * Default minimum number of uppercase letters required in a password.
+     *
+     * @var int
      */
     public const MINIMUM_UPPERCASE = 1;
 
     /**
-     * @var int default minimum number of numbers
+     * Minimum number of digits required in a password.
+     *
+     * @var int
      */
     protected $minimumDigits;
 
     /**
-     * @var int default minimum password length
+     * Minimum password length required.
+     *
+     * @var int
      */
     protected $minimumLength;
 
     /**
-     * @var int default minimum number of letters
+     * Minimum number of letters required in a password.
+     *
+     * @var int
      */
     protected $minimumLetters;
 
     /**
-     * @var int minimum number of lowercase letters
+     * Minimum number of lowercase letters required in a password.
+     *
+     * @var int
      */
     protected $minimumLowercase;
 
     /**
-     * @var int minimum number of special characters
+     * Minimum number of special characters required in a password.
+     *
+     * @var int
      */
     protected $minimumSpecialChars;
 
     /**
-     * @var int minimum number of uppercase letters
+     * Minimum number of uppercase letters required in a password.
+     *
+     * @var int
      */
     protected $minimumUppercase;
 
+    /**
+     * Creates a new password policy with optional custom configuration.
+     * 
+     * If no configuration is provided, the policy will use the default values
+     * defined in the class constants. All values are converted to positive integers
+     * and validated to ensure they make logical sense (e.g., minimum length must
+     * be at least the sum of all character type minimums).
+     *
+     * @param array<string, int> $config Optional configuration to override defaults:
+     *                                   - minimumDigits: Minimum number of digits
+     *                                   - minimumLowercase: Minimum number of lowercase letters
+     *                                   - minimumSpecialChars: Minimum number of special characters
+     *                                   - minimumUppercase: Minimum number of uppercase letters
+     *                                   - minimumLetters: Minimum number of total letters
+     *                                   - minimumLength: Minimum password length
+     */
     public function __construct(array $config = [])
     {
         $this->minimumDigits       = abs((int) ($config['minimumDigits']       ?? self::MINIMUM_DIGITS       ));
@@ -88,9 +134,9 @@ class Policy
     }
 
     /**
-     * Returns the minimum number of numbers required in a password
+     * Gets the minimum number of digits required in a password.
      *
-     * @return int
+     * @return int Minimum number of digits required
      */
     public function getMinimumDigits(): int
     {
@@ -98,9 +144,9 @@ class Policy
     }
 
     /**
-     * Returns the minimum number of characters required in a password
+     * Gets the minimum password length required.
      *
-     * @return int
+     * @return int Minimum password length required
      */
     public function getMinimumLength(): int
     {
@@ -108,9 +154,9 @@ class Policy
     }
 
     /**
-     * Returns the minimum number of letters required in a password
+     * Gets the minimum number of letters required in a password.
      *
-     * @return int
+     * @return int Minimum number of letters required
      */
     public function getMinimumLetters(): int
     {
@@ -118,9 +164,9 @@ class Policy
     }
 
     /**
-     * Returns the minimum number of lowercase letters required in a password
+     * Gets the minimum number of lowercase letters required in a password.
      *
-     * @return int
+     * @return int Minimum number of lowercase letters required
      */
     public function getMinimumLowercase(): int
     {
@@ -128,9 +174,9 @@ class Policy
     }
 
     /**
-     * Returns the minimum number of special characters required in a password
+     * Gets the minimum number of special characters required in a password.
      *
-     * @return int
+     * @return int Minimum number of special characters required
      */
     public function getMinimumSpecialChars(): int
     {
@@ -138,9 +184,9 @@ class Policy
     }
 
     /**
-     * Returns the minimum number of uppercase letters required in a password
+     * Gets the minimum number of uppercase letters required in a password.
      *
-     * @return int
+     * @return int Minimum number of uppercase letters required
      */
     public function getMinimumUppercase(): int
     {

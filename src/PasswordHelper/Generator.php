@@ -5,21 +5,36 @@ declare(strict_types=1);
 namespace PasswordHelper;
 
 /**
- * Class Generator
+ * Generates secure random passwords that meet specified policy requirements.
+ *
+ * This class is responsible for creating passwords that satisfy all the criteria
+ * defined in the password policy, including length, character types, and minimum
+ * requirements for each character category.
+ *
  * @package PasswordHelper
  */
 class Generator
 {
     /**
-     * @var Policy Contains password policy logic
+     * Password policy configuration.
+     *
+     * @var Policy
      */
     protected $policy;
 
     /**
+     * Password validator instance.
+     *
      * @var Validator
      */
     protected $validator;
 
+    /**
+     * Creates a new password generator with the specified policy and validator.
+     *
+     * @param Policy $policy The password policy to follow
+     * @param Validator $validator The validator to ensure generated passwords meet requirements
+     */
     public function __construct(Policy $policy, Validator $validator)
     {
         $this->policy = $policy;
@@ -27,11 +42,14 @@ class Generator
     }
 
     /**
-     * Generates a random password that meets the criteria set forth by the password policy
+     * Generates a random password that meets all criteria set forth by the password policy.
      *
-     * @return string
+     * The method will recursively generate passwords until one is found that satisfies
+     * all policy requirements. This ensures that the returned password always meets
+     * the minimum criteria for length and character types.
      *
-     * @throws \Exception
+     * @return string A randomly generated password meeting all policy requirements
+     * @throws \Exception If random number generation fails
      */
     public function generatePassword(): string
     {
@@ -50,9 +68,13 @@ class Generator
     }
 
     /**
-     * Gets the available characters as set forth by the password policy
+     * Gets the available characters based on the password policy requirements.
      *
-     * @return array
+     * This method builds an array of characters that can be used in password
+     * generation based on the minimum requirements for each character type
+     * (digits, special characters, lowercase, uppercase).
+     *
+     * @return array<int, string> Array of available characters for password generation
      */
     protected function getAvailableCharacters(): array
     {
@@ -76,18 +98,18 @@ class Generator
     }
 
     /**
-     * Gets a random character from the array of available characters. Can return the same character more than once
-     * if called multiple times.
+     * Gets a random character from the array of available characters.
      *
-     * @param array $chars
+     * This method uses PHP's cryptographically secure random number generator
+     * to select a random character from the available character set.
      *
-     * @return string
-     *
-     * @throws \Exception
+     * @param array<int, string> $chars Array of available characters
+     * @return string A randomly selected character
+     * @throws \Exception If random number generation fails
      */
     protected function getRandomCharacter(array $chars): string
     {
         shuffle($chars);
-        return (string) $chars[random_int(0, count($chars) - 1)];
+        return $chars[random_int(0, count($chars) - 1)];
     }
 }
