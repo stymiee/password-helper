@@ -80,7 +80,7 @@ class Generator
     {
         $chars = [];
         if ($this->policy->getMinimumDigits()) {
-            $chars = array_merge($chars, range(0, 9));
+            $chars = array_merge($chars, array_map('strval', range(0, 9)));
         }
         if ($this->policy->getMinimumSpecialChars()) {
             $chars = array_merge($chars, str_split('^_~@#$%&-=+{};:<>'));
@@ -110,6 +110,6 @@ class Generator
     protected function getRandomCharacter(array $chars): string
     {
         shuffle($chars);
-        return $chars[random_int(0, count($chars) - 1)];
+        return (string) $chars[random_int(0, count($chars) - 1)];
     }
 }
