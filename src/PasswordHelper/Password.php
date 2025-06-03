@@ -5,99 +5,60 @@ declare(strict_types=1);
 namespace PasswordHelper;
 
 /**
- * Main class for password management operations.
+ * Facade class that provides backward compatibility with the old API.
  * 
- * This class provides a high-level interface for password operations including:
- * - Password generation
- * - Password validation
- * - Password strength checking
- * - Password hashing and verification
+ * This class wraps the new implementation while maintaining the same
+ * public interface as the original Password Helper.
  * 
  * @package PasswordHelper
- * @codeCoverageIgnore
  */
 class Password
 {
-    /**
-     * Password strength checker instance.
-     *
-     * @var StrengthChecker
-     */
-    protected $checker;
+    private Policy $policy;
+    private Generator $generator;
+    private Validator $validator;
+    private StrengthChecker $strengthChecker;
 
     /**
-     * Password generator instance.
+     * Creates a new password helper with the specified configuration.
      *
-     * @var Generator
-     */
-    protected $generator;
-
-    /**
-     * Password policy configuration.
-     *
-     * @var Policy
-     */
-    private $policy;
-
-    /**
-     * Password validator instance.
-     *
-     * @var Validator
-     */
-    protected $validator;
-
-    /**
-     * Creates a new Password instance with optional configuration.
-     *
-     * @param array $config Configuration options for password policy:
-     *                      - minimumDigits: Minimum number of digits required
-     *                      - minimumLowercase: Minimum number of lowercase letters required
-     *                      - minimumSpecialChars: Minimum number of special characters required
-     *                      - minimumUppercase: Minimum number of uppercase letters required
-     *                      - minimumLetters: Minimum number of total letters required
-     *                      - minimumLength: Minimum password length required
+     * @param array<string, int> $config Optional configuration to override defaults
      */
     public function __construct(array $config = [])
     {
-        $this->policy = new Policy($config);
-        $this->checker = new StrengthChecker();
+        $this->policy = new Policy(
+            $config['minimumLength'] ?? 10,
+            20, // maximumLength
+            $this->calculateMinimumCharacterTypes($config),
+            false, // allowRepeatedCharacters
+            false, // allowSequentialCharacters
+            false  // allowCommonPatterns
+        );
+
+        $this->generator = new Generator(
+            $this->policy->getMinimumLength(),
+            $this->policy->getMaximumLength()
+        );
+
         $this->validator = new Validator($this->policy);
-        $this->generator = new Generator($this->policy, $this->validator);
+        $this->strengthChecker = new StrengthChecker();
     }
 
     /**
-     * Returns debug information about the current password policy configuration.
+     * Generates a new password that meets the policy requirements.
      *
-     * @return array<string, int> Array containing all minimum requirements
-     */
-    public function __debugInfo(): array
-    {
-        return [
-            'minimumDigits' => $this->policy->getMinimumDigits(),
-            'minimumLowercase' => $this->policy->getMinimumLowercase(),
-            'minimumSpecialChars' => $this->policy->getMinimumSpecialChars(),
-            'minimumUppercase' => $this->policy->getMinimumUppercase(),
-            'minimumLetters' => $this->policy->getMinimumLetters(),
-            'minimumLength' => $this->policy->getMinimumLength(),
-        ];
-    }
-
-    /**
-     * Generates a new password that satisfies the current password policy.
-     *
-     * @return string A randomly generated password meeting all policy requirements
-     * @throws \Exception If random number generation fails
+     * @return string The generated password
      */
     public function generate(): string
     {
-        return $this->generator->generatePassword();
+        return $this->generator->generate();
     }
 
     /**
-     * Validates that a password satisfies all requirements of the current password policy.
+     * Validates that a password meets the complexity requirements.
      *
      * @param string $password The password to validate
-     * @return bool True if the password meets all policy requirements, false otherwise
+     * @return bool True if the password meets all requirements
      */
     public function validateComplexity(string $password): bool
     {
@@ -105,22 +66,29 @@ class Password
     }
 
     /**
-     * Evaluates and returns the strength rating of a given password.
+     * Checks the strength of a password and returns a descriptive rating.
      *
-     * @param string $password The password to evaluate
-     * @return string One of: 'Very Weak', 'Weak', 'Good', 'Very Good', 'Strong', 'Very Strong'
+     * @param string $password The password to check
+     * @return string The strength rating: "Very Weak", "Weak", "Fair", "Good", "Strong", or "Very Strong"
      */
     public function checkStrength(string $password): string
     {
-        return $this->checker->checkStrength($password);
+        $score = $this->strengthChecker->checkStrength($password);
+        
+        return match(true) {
+            $score < 20 => 'Very Weak',
+            $score < 40 => 'Weak',
+            $score < 60 => 'Fair',
+            $score < 80 => 'Good',
+            $score < 90 => 'Strong',
+            default => 'Very Strong'
+        };
     }
 
     /**
-     * Creates a secure hash of the given password using PHP's password_hash().
+     * Hashes a password using PHP's password_hash function.
      *
-     * @see https://secure.php.net/manual/en/function.password-hash.php
-     *
-     * @param string $password The plain text password to hash
+     * @param string $password The password to hash
      * @return string The hashed password
      */
     public function hash(string $password): string
@@ -129,13 +97,11 @@ class Password
     }
 
     /**
-     * Verifies that a password matches a hash.
+     * Verifies a password against a hash.
      *
-     * @see https://secure.php.net/manual/en/function.password-verify.php
-     *
-     * @param string $password The plain text password to verify
+     * @param string $password The password to verify
      * @param string $hash The hash to verify against
-     * @return bool True if the password matches the hash, false otherwise
+     * @return bool True if the password matches the hash
      */
     public function verify(string $password, string $hash): bool
     {
@@ -143,32 +109,30 @@ class Password
     }
 
     /**
-     * Returns information about the given hash.
+     * Checks if a hash needs to be rehashed.
      *
-     * @see https://secure.php.net/manual/en/function.password-get-info.php
-     *
-     * @param string $hash A hash created by password_hash()
-     * @return array{
-     *     algo: int,
-     *     algoName: string,
-     *     options: array<string, mixed>
-     * } Information about the hash
-     */
-    public function getInfo(string $hash): array
-    {
-        return password_get_info($hash);
-    }
-
-    /**
-     * Checks if the given hash should be rehashed to match the current algorithm and options.
-     *
-     * @see https://secure.php.net/manual/en/function.password-needs-rehash.php
-     *
-     * @param string $hash A hash created by password_hash()
-     * @return bool True if the hash should be rehashed, false otherwise
+     * @param string $hash The hash to check
+     * @return bool True if the hash should be rehashed
      */
     public function checkForRehash(string $hash): bool
     {
         return password_needs_rehash($hash, PASSWORD_DEFAULT);
+    }
+
+    /**
+     * Calculates the minimum character types based on the old configuration.
+     *
+     * @param array<string, int> $config The configuration array
+     * @return int The minimum number of character types required
+     */
+    private function calculateMinimumCharacterTypes(array $config): int
+    {
+        $types = 0;
+        
+        if (($config['minimumDigits'] ?? 1) > 0) $types++;
+        if (($config['minimumSpecialChars'] ?? 1) > 0) $types++;
+        if (($config['minimumUppercase'] ?? 1) > 0 || ($config['minimumLowercase'] ?? 1) > 0) $types++;
+        
+        return $types;
     }
 }

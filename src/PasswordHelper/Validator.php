@@ -5,184 +5,172 @@ declare(strict_types=1);
 namespace PasswordHelper;
 
 /**
- * Validates passwords against defined policy requirements.
+ * Validates passwords against a set of policy requirements.
  * 
- * This class provides methods to check if a password meets various policy
- * requirements such as minimum length, character types, and complexity.
- * Each validation method returns a boolean indicating whether the password
- * meets the specific requirement.
+ * This class provides methods to check if passwords meet various security
+ * requirements such as minimum length, character types, and complexity rules.
  * 
  * @package PasswordHelper
  */
 class Validator
 {
     /**
-     * Password policy configuration.
-     *
-     * @var Policy
+     * Creates a new password validator.
      */
-    protected $policy;
-
-    /**
-     * Creates a new password validator with the specified policy.
-     *
-     * @param Policy $policy The password policy to validate against
-     */
-    public function __construct(Policy $policy)
-    {
-        $this->policy = $policy;
+    public function __construct(
+        private Policy $policy
+    ) {
     }
 
     /**
-     * Validates that a password meets all policy requirements.
+     * Validates a password against the policy requirements.
      *
      * @param string $password The password to validate
-     * @return bool True if the password meets all policy requirements
+     * @return bool True if the password meets all requirements
      */
     public function isValidPassword(string $password): bool
     {
-        $password = trim($password);
-        return $this->validateMinimumDigits($password) &&
-               $this->validateMinimumLength($password) &&
-               $this->validateMinimumLetters($password) &&
-               $this->validateMinimumUppercase($password) &&
-               $this->validateMinimumLowercase($password) &&
-               $this->validateMinimumSpecialChars($password);
+        return $this->meetsLengthRequirement($password) &&
+               $this->meetsCharacterTypeRequirements($password) &&
+               $this->meetsComplexityRequirements($password);
     }
 
     /**
-     * Validates that a password meets the minimum length requirement.
+     * Checks if the password meets the length requirements.
      *
-     * @param string $password The password to validate
-     * @return bool True if the password meets the minimum length requirement
+     * @param string $password The password to check
+     * @return bool True if the length requirements are met
      */
-    public function validateMinimumLength(string $password): bool
+    private function meetsLengthRequirement(string $password): bool
     {
-        return strlen($password) >= $this->policy->getMinimumLength();
+        $length = strlen($password);
+        return $length >= $this->policy->getMinimumLength() &&
+               $length <= $this->policy->getMaximumLength();
     }
 
     /**
-     * Validates that a password contains the minimum required number of digits.
+     * Checks if the password meets the character type requirements.
      *
-     * @param string $password The password to validate
-     * @return bool True if the password contains enough digits
+     * @param string $password The password to check
+     * @return bool True if the character type requirements are met
      */
-    public function validateMinimumDigits(string $password): bool
+    private function meetsCharacterTypeRequirements(string $password): bool
     {
-        return preg_match_all('/\d/', $password, $matches) >= $this->policy->getMinimumDigits();
+        return $this->countCharacterTypes($password) >= $this->policy->getMinimumCharacterTypes();
     }
 
     /**
-     * Validates that a password contains the minimum required number of letters.
+     * Counts the number of different character types in the password.
      *
-     * @param string $password The password to validate
-     * @return bool True if the password contains enough letters
+     * @param string $password The password to check
+     * @return int The number of different character types
      */
-    public function validateMinimumLetters(string $password): bool
+    private function countCharacterTypes(string $password): int
     {
-        return preg_match_all('/[a-z]/i', $password, $matches) >= $this->policy->getMinimumLetters();
+        $types = 0;
+        
+        if (preg_match('/[A-Z]/', $password)) $types++;
+        if (preg_match('/[a-z]/', $password)) $types++;
+        if (preg_match('/\d/', $password)) $types++;
+        if (preg_match('/[^a-zA-Z\d]/', $password)) $types++;
+        
+        return $types;
     }
 
     /**
-     * Validates that a password contains the minimum required number of uppercase letters.
+     * Checks if the password meets the complexity requirements.
      *
-     * @param string $password The password to validate
-     * @return bool True if the password contains enough uppercase letters
+     * @param string $password The password to check
+     * @return bool True if the complexity requirements are met
      */
-    public function validateMinimumUppercase(string $password): bool
+    private function meetsComplexityRequirements(string $password): bool
     {
-        return preg_match_all('/[A-Z]/', $password, $matches) >= $this->policy->getMinimumUppercase();
+        return !$this->hasRepeatedCharacters($password) &&
+               !$this->hasSequentialCharacters($password) &&
+               !$this->hasCommonPatterns($password);
     }
 
     /**
-     * Validates that a password contains the minimum required number of lowercase letters.
+     * Checks if the password contains repeated characters.
      *
-     * @param string $password The password to validate
-     * @return bool True if the password contains enough lowercase letters
+     * @param string $password The password to check
+     * @return bool True if repeated characters are found
      */
-    public function validateMinimumLowercase(string $password): bool
+    private function hasRepeatedCharacters(string $password): bool
     {
-        return preg_match_all('/[a-z]/', $password, $matches) >= $this->policy->getMinimumLowercase();
+        return (bool) preg_match('/(.)\1{2,}/', $password);
     }
 
     /**
-     * Validates that a password contains the minimum required number of special characters.
+     * Checks if the password contains sequential characters.
      *
-     * @param string $password The password to validate
-     * @return bool True if the password contains enough special characters
+     * @param string $password The password to check
+     * @return bool True if sequential characters are found
      */
-    public function validateMinimumSpecialChars(string $password): bool
+    private function hasSequentialCharacters(string $password): bool
     {
-        return preg_match_all('/[^a-z\d ]/i', $password, $matches) >= $this->policy->getMinimumSpecialChars();
+        return $this->hasSequentialNumbers($password) ||
+               $this->hasSequentialLetters($password) ||
+               $this->hasKeyboardPattern($password);
     }
 
     /**
-     * Checks if a password meets the minimum digits requirement (returns true if minimum is zero).
+     * Checks if the password contains sequential numbers.
      *
-     * @param string $password
-     * @return bool
+     * @param string $password The password to check
+     * @return bool True if sequential numbers are found
      */
-    protected function meetsMinimumDigits(string $password): bool
+    private function hasSequentialNumbers(string $password): bool
     {
-        if ($this->policy->getMinimumDigits() === 0) {
-            return true;
+        return (bool) preg_match('/012|123|234|345|456|567|678|789/', $password);
+    }
+
+    /**
+     * Checks if the password contains sequential letters.
+     *
+     * @param string $password The password to check
+     * @return bool True if sequential letters are found
+     */
+    private function hasSequentialLetters(string $password): bool
+    {
+        return (bool) preg_match('/abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz/i', $password);
+    }
+
+    /**
+     * Checks if the password contains keyboard patterns.
+     *
+     * @param string $password The password to check
+     * @return bool True if keyboard patterns are found
+     */
+    private function hasKeyboardPattern(string $password): bool
+    {
+        return (bool) preg_match('/qwer|wert|erty|rtyu|tyui|yuio|uiop|asdf|sdfg|dfgh|fghj|ghjk|hjkl|zxcv|xcvb|cvbn|vbnm/i', $password);
+    }
+
+    /**
+     * Checks if the password contains common patterns.
+     *
+     * @param string $password The password to check
+     * @return bool True if common patterns are found
+     */
+    private function hasCommonPatterns(string $password): bool
+    {
+        $commonPatterns = [
+            '123456', 'password', 'qwerty', 'admin', 'welcome',
+            'monkey', 'letmein', 'dragon', 'baseball', 'iloveyou',
+            'trustno1', 'sunshine', 'master', 'hello', 'shadow',
+            'ashley', 'football', 'jesus', 'michael', 'ninja',
+            'mustang', 'password1', '12345678', 'qwerty123', 'admin123'
+        ];
+
+        $password = strtolower($password);
+        
+        foreach ($commonPatterns as $pattern) {
+            if (str_contains($password, $pattern)) {
+                return true;
+            }
         }
-        return $this->validateMinimumDigits($password);
-    }
-
-    /**
-     * Checks if a password meets the minimum letters requirement (returns true if minimum is zero).
-     *
-     * @param string $password
-     * @return bool
-     */
-    protected function meetsMinimumLetters(string $password): bool
-    {
-        if ($this->policy->getMinimumLetters() === 0) {
-            return true;
-        }
-        return $this->validateMinimumLetters($password);
-    }
-
-    /**
-     * Checks if a password meets the minimum lowercase requirement (returns true if minimum is zero).
-     *
-     * @param string $password
-     * @return bool
-     */
-    protected function meetsMinimumLowercase(string $password): bool
-    {
-        if ($this->policy->getMinimumLowercase() === 0) {
-            return true;
-        }
-        return $this->validateMinimumLowercase($password);
-    }
-
-    /**
-     * Checks if a password meets the minimum uppercase requirement (returns true if minimum is zero).
-     *
-     * @param string $password
-     * @return bool
-     */
-    protected function meetsMinimumUppercase(string $password): bool
-    {
-        if ($this->policy->getMinimumUppercase() === 0) {
-            return true;
-        }
-        return $this->validateMinimumUppercase($password);
-    }
-
-    /**
-     * Checks if a password meets the minimum special chars requirement (returns true if minimum is zero).
-     *
-     * @param string $password
-     * @return bool
-     */
-    protected function meetsMinimumSpecialChars(string $password): bool
-    {
-        if ($this->policy->getMinimumSpecialChars() === 0) {
-            return true;
-        }
-        return $this->validateMinimumSpecialChars($password);
+        
+        return false;
     }
 }

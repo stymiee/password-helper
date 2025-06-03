@@ -17,15 +17,11 @@ class StrengthChecker
 {
     /**
      * Minimum password length for a strong password.
-     *
-     * @var int
      */
     private const MIN_LENGTH = 8;
 
     /**
      * Maximum length to consider for scoring.
-     *
-     * @var int
      */
     private const MAX_LENGTH = 20;
 
@@ -75,11 +71,7 @@ class StrengthChecker
      */
     public function checkStrength(string $password): int
     {
-        if (empty($password)) {
-            return 1;
-        }
-
-        if (strlen($password) < self::MIN_LENGTH) {
+        if (empty($password) || strlen($password) < self::MIN_LENGTH) {
             return 1;
         }
 
@@ -103,15 +95,11 @@ class StrengthChecker
     {
         $length = strlen($password);
         
-        if ($length < self::MIN_LENGTH) {
-            return 0;
-        }
-        
-        if ($length >= self::MAX_LENGTH) {
-            return 30;
-        }
-        
-        return (int) (($length - self::MIN_LENGTH) / (self::MAX_LENGTH - self::MIN_LENGTH) * 30);
+        return match(true) {
+            $length < self::MIN_LENGTH => 0,
+            $length >= self::MAX_LENGTH => 30,
+            default => (int) (($length - self::MIN_LENGTH) / (self::MAX_LENGTH - self::MIN_LENGTH) * 30)
+        };
     }
 
     /**
@@ -122,13 +110,9 @@ class StrengthChecker
      */
     private function calculateVarietyScore(string $password): int
     {
-        $score = 0;
-        
-        $score += $this->getCharacterTypeScore($password);
-        $score += $this->getMixedCaseScore($password);
-        $score += $this->getMixedTypesScore($password);
-        
-        return $score;
+        return $this->getCharacterTypeScore($password) +
+               $this->getMixedCaseScore($password) +
+               $this->getMixedTypesScore($password);
     }
 
     /**
@@ -185,14 +169,10 @@ class StrengthChecker
      */
     private function calculateComplexityScore(string $password): int
     {
-        $score = 0;
-        
-        $score += $this->getRepeatedCharsScore($password);
-        $score += $this->getSequentialCharsScore($password);
-        $score += $this->getCommonPatternScore($password);
-        $score += $this->getDictionaryWordScore($password);
-        
-        return $score;
+        return $this->getRepeatedCharsScore($password) +
+               $this->getSequentialCharsScore($password) +
+               $this->getCommonPatternScore($password) +
+               $this->getDictionaryWordScore($password);
     }
 
     /**
@@ -339,7 +319,7 @@ class StrengthChecker
         $password = strtolower($password);
         
         foreach (self::COMMON_PATTERNS as $pattern) {
-            if (strpos($password, $pattern) !== false) {
+            if (str_contains($password, $pattern)) {
                 return true;
             }
         }

@@ -5,148 +5,43 @@ declare(strict_types=1);
 namespace PasswordHelper;
 
 /**
- * Defines and manages password policy requirements.
+ * Defines password policy requirements and constraints.
  * 
- * This class handles the configuration and validation of password requirements,
- * including minimum lengths and character type requirements. It provides default
- * values that follow security best practices but can be customized through
- * configuration.
+ * This class encapsulates all the rules and requirements that passwords
+ * must meet to be considered valid according to the policy.
  * 
  * @package PasswordHelper
  */
 class Policy
 {
     /**
-     * Default minimum number of digits required in a password.
-     *
-     * @var int
+     * Creates a new password policy with the specified requirements.
      */
-    public const MINIMUM_DIGITS = 1;
-
-    /**
-     * Default minimum password length.
-     *
-     * @var int
-     */
-    public const MINIMUM_LENGTH = 10;
-
-    /**
-     * Default minimum number of letters required in a password.
-     *
-     * @var int
-     */
-    public const MINIMUM_LETTERS = 1;
-
-    /**
-     * Default minimum number of lowercase letters required in a password.
-     *
-     * @var int
-     */
-    public const MINIMUM_LOWERCASE = 1;
-
-    /**
-     * Default minimum number of special characters required in a password.
-     *
-     * @var int
-     */
-    public const MINIMUM_SPECIAL_CHARS = 1;
-
-    /**
-     * Default minimum number of uppercase letters required in a password.
-     *
-     * @var int
-     */
-    public const MINIMUM_UPPERCASE = 1;
-
-    /**
-     * Minimum number of digits required in a password.
-     *
-     * @var int
-     */
-    protected $minimumDigits;
-
-    /**
-     * Minimum password length required.
-     *
-     * @var int
-     */
-    protected $minimumLength;
-
-    /**
-     * Minimum number of letters required in a password.
-     *
-     * @var int
-     */
-    protected $minimumLetters;
-
-    /**
-     * Minimum number of lowercase letters required in a password.
-     *
-     * @var int
-     */
-    protected $minimumLowercase;
-
-    /**
-     * Minimum number of special characters required in a password.
-     *
-     * @var int
-     */
-    protected $minimumSpecialChars;
-
-    /**
-     * Minimum number of uppercase letters required in a password.
-     *
-     * @var int
-     */
-    protected $minimumUppercase;
-
-    /**
-     * Creates a new password policy with optional custom configuration.
-     * 
-     * If no configuration is provided, the policy will use the default values
-     * defined in the class constants. All values are converted to positive integers
-     * and validated to ensure they make logical sense (e.g., minimum length must
-     * be at least the sum of all character type minimums).
-     *
-     * @param array<string, int> $config Optional configuration to override defaults:
-     *                                   - minimumDigits: Minimum number of digits
-     *                                   - minimumLowercase: Minimum number of lowercase letters
-     *                                   - minimumSpecialChars: Minimum number of special characters
-     *                                   - minimumUppercase: Minimum number of uppercase letters
-     *                                   - minimumLetters: Minimum number of total letters
-     *                                   - minimumLength: Minimum password length
-     */
-    public function __construct(array $config = [])
-    {
-        $this->minimumDigits       = abs((int) ($config['minimumDigits']       ?? self::MINIMUM_DIGITS       ));
-        $this->minimumLowercase    = abs((int) ($config['minimumLowercase']    ?? self::MINIMUM_LOWERCASE    ));
-        $this->minimumSpecialChars = abs((int) ($config['minimumSpecialChars'] ?? self::MINIMUM_SPECIAL_CHARS));
-        $this->minimumUppercase    = abs((int) ($config['minimumUppercase']    ?? self::MINIMUM_UPPERCASE    ));
-
-        $minimumLetters            = abs((int) ($config['minimumLetters']      ?? self::MINIMUM_LETTERS      ));
-        $this->minimumLetters      = max([$minimumLetters, $this->minimumLowercase + $this->minimumUppercase]);
-
-        $minimumLength             = abs((int) ($config['minimumLength']       ?? self::MINIMUM_LENGTH       ));
-        $this->minimumLength       = max([
-            $minimumLength,
-            $this->minimumLetters + $this->minimumDigits + $this->minimumSpecialChars
-        ]);
+    public function __construct(
+        private int $minimumLength = 8,
+        private int $maximumLength = 20,
+        private int $minimumCharacterTypes = 3,
+        private bool $allowRepeatedCharacters = false,
+        private bool $allowSequentialCharacters = false,
+        private bool $allowCommonPatterns = false
+    ) {
+        if ($this->minimumLength < 8) {
+            throw new \InvalidArgumentException('Minimum length must be at least 8 characters');
+        }
+        
+        if ($this->maximumLength < $this->minimumLength) {
+            throw new \InvalidArgumentException('Maximum length must be greater than minimum length');
+        }
+        
+        if ($this->minimumCharacterTypes < 1 || $this->minimumCharacterTypes > 4) {
+            throw new \InvalidArgumentException('Minimum character types must be between 1 and 4');
+        }
     }
 
     /**
-     * Gets the minimum number of digits required in a password.
+     * Gets the minimum required password length.
      *
-     * @return int Minimum number of digits required
-     */
-    public function getMinimumDigits(): int
-    {
-        return $this->minimumDigits;
-    }
-
-    /**
-     * Gets the minimum password length required.
-     *
-     * @return int Minimum password length required
+     * @return int The minimum length
      */
     public function getMinimumLength(): int
     {
@@ -154,42 +49,52 @@ class Policy
     }
 
     /**
-     * Gets the minimum number of letters required in a password.
+     * Gets the maximum allowed password length.
      *
-     * @return int Minimum number of letters required
+     * @return int The maximum length
      */
-    public function getMinimumLetters(): int
+    public function getMaximumLength(): int
     {
-        return $this->minimumLetters;
+        return $this->maximumLength;
     }
 
     /**
-     * Gets the minimum number of lowercase letters required in a password.
+     * Gets the minimum required number of character types.
      *
-     * @return int Minimum number of lowercase letters required
+     * @return int The minimum number of character types
      */
-    public function getMinimumLowercase(): int
+    public function getMinimumCharacterTypes(): int
     {
-        return $this->minimumLowercase;
+        return $this->minimumCharacterTypes;
     }
 
     /**
-     * Gets the minimum number of special characters required in a password.
+     * Checks if repeated characters are allowed.
      *
-     * @return int Minimum number of special characters required
+     * @return bool True if repeated characters are allowed
      */
-    public function getMinimumSpecialChars(): int
+    public function areRepeatedCharactersAllowed(): bool
     {
-        return $this->minimumSpecialChars;
+        return $this->allowRepeatedCharacters;
     }
 
     /**
-     * Gets the minimum number of uppercase letters required in a password.
+     * Checks if sequential characters are allowed.
      *
-     * @return int Minimum number of uppercase letters required
+     * @return bool True if sequential characters are allowed
      */
-    public function getMinimumUppercase(): int
+    public function areSequentialCharactersAllowed(): bool
     {
-        return $this->minimumUppercase;
+        return $this->allowSequentialCharacters;
+    }
+
+    /**
+     * Checks if common patterns are allowed.
+     *
+     * @return bool True if common patterns are allowed
+     */
+    public function areCommonPatternsAllowed(): bool
+    {
+        return $this->allowCommonPatterns;
     }
 }

@@ -1,80 +1,89 @@
 <?php
 
 use PasswordHelper\Generator;
-use PasswordHelper\Policy;
-use PasswordHelper\Validator;
 use PHPUnit\Framework\TestCase;
 
 class GeneratorTest extends TestCase
 {
-    public function dataProviderForGeneratePassword(): array
+    public function testDefaultConstructor(): void
     {
-        return [
-            [new Policy(['minimumLowercase' => 0]), true, false, true, true],
-            [new Policy(['minimumDigits' => 0]), false, true, true, true],
-            [new Policy(['minimumSpecialChars' => 0]), true, true, true, false],
-            [new Policy(['minimumUppercase' => 0]), true, true, false, true],
-            [new Policy(), true, true, true, true],
-        ];
+        $generator = new Generator();
+        
+        self::assertEquals(12, $generator->getMinLength());
+        self::assertEquals(20, $generator->getMaxLength());
     }
 
-    /**
-     * @dataProvider dataProviderForGeneratePassword
-     *
-     * @param Policy $policy
-     * @param bool $digits
-     * @param bool $lower
-     * @param bool $upper
-     * @param bool $special
-     */
-    public function testGeneratePassword(Policy $policy, bool $digits, bool $lower, bool $upper, bool $special): void
+    public function testCustomConstructor(): void
     {
-        $generator = new Generator($policy, new Validator($policy));
-        $password = $generator->generatePassword();
-
-        self::assertEquals($policy->getMinimumLength(), strlen($password));
-        self::assertEquals((bool) preg_match_all('/\d/', $password, $m), $digits);
-        self::assertEquals((bool) preg_match_all('/[a-z]/', $password, $m), $lower);
-        self::assertEquals((bool) preg_match_all('/[A-Z]/', $password, $m), $upper);
-        self::assertEquals((bool) preg_match_all('/[^a-z\d ]/i', $password, $m), $special);
+        $generator = new Generator(8, 16);
+        
+        self::assertEquals(8, $generator->getMinLength());
+        self::assertEquals(16, $generator->getMaxLength());
     }
 
-    public function dataProviderForAvailableCharacters(): array
+    public function testGenerateWithAllTypes(): void
     {
-        $digits = range(0, 9);
-        $lowercase = range('a', 'z');
-        $uppercase = range('A', 'Z');
-        $specialChars = str_split('^_~@#$%&-=+{};:<>');
-        $all = array_merge($digits, $specialChars, $lowercase, $uppercase);
+        $generator = new Generator();
+        $password = $generator->generate();
 
-        return [
-            [new Policy(['minimumLowercase' => 0, 'minimumUppercase' => 0, 'minimumSpecialChars' => 0]), $digits],
-            [new Policy(['minimumDigits' => 0, 'minimumUppercase' => 0, 'minimumSpecialChars' => 0]), $lowercase],
-            [new Policy(['minimumLowercase' => 0, 'minimumDigits' => 0, 'minimumSpecialChars' => 0]), $uppercase],
-            [new Policy(['minimumLowercase' => 0, 'minimumUppercase' => 0, 'minimumDigits' => 0]), $specialChars],
-            [new Policy(), $all],
-        ];
+        self::assertGreaterThanOrEqual(12, strlen($password));
+        self::assertLessThanOrEqual(20, strlen($password));
+        self::assertRegExp('/[A-Z]/', $password);
+        self::assertRegExp('/[a-z]/', $password);
+        self::assertRegExp('/\d/', $password);
+        self::assertRegExp('/[^a-zA-Z\d]/', $password);
     }
 
-    /**
-     * @dataProvider dataProviderForAvailableCharacters
-     *
-     * @param Policy $policy
-     * @param array $chars
-     */
-    public function testGetAvailableCharacters(Policy $policy, array $chars): void
+    public function testGenerateWithSpecificTypes(): void
     {
-        $class = new Generator($policy, new Validator($policy));
-        $reflectionMethod = new \ReflectionMethod(Generator::class, 'getAvailableCharacters');
-        $reflectionMethod->setAccessible(true);
-        self::assertEquals($reflectionMethod->invoke($class), $chars);
+        $generator = new Generator();
+        
+        // Test with only uppercase and numbers
+        $password = $generator->generate(includeUppercase: true, includeLowercase: false, includeNumbers: true, includeSpecial: false);
+        self::assertRegExp('/[A-Z]/', $password);
+        self::assertNotRegExp('/[a-z]/', $password);
+        self::assertRegExp('/\d/', $password);
+        self::assertNotRegExp('/[^a-zA-Z\d]/', $password);
+
+        // Test with only lowercase and special
+        $password = $generator->generate(includeUppercase: false, includeLowercase: true, includeNumbers: false, includeSpecial: true);
+        self::assertNotRegExp('/[A-Z]/', $password);
+        self::assertRegExp('/[a-z]/', $password);
+        self::assertNotRegExp('/\d/', $password);
+        self::assertRegExp('/[^a-zA-Z\d]/', $password);
+    }
+
+    public function testGenerateWithNoTypes(): void
+    {
+        $generator = new Generator();
+        
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('At least one character type must be selected');
+        
+        $generator->generate(includeUppercase: false, includeLowercase: false, includeNumbers: false, includeSpecial: false);
+    }
+
+    public function testInvalidMinLength(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Minimum length must be at least 8 characters');
+        
+        new Generator(7);
+    }
+
+    public function testInvalidMaxLength(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Maximum length must be greater than minimum length');
+        
+        new Generator(10, 9);
     }
 
     public function dataProviderForRandomChars(): array
     {
         return [
-            [range(0, 9)],
-            [str_split('^_~@#$%&-=+{};:<>')],
+            [array_map('strval', range(0, 9))],
+            [str_split('!@#$%^&*()_+-=[]{}|;:,.<>?')],
             [range('a', 'z')],
             [range('A', 'Z')],
         ];
@@ -87,10 +96,12 @@ class GeneratorTest extends TestCase
      */
     public function testGetRandomCharacter(array $chars): void
     {
-        $policy = new Policy();
-        $class = new Generator($policy, new Validator($policy));
+        $generator = new Generator();
         $reflectionMethod = new \ReflectionMethod(Generator::class, 'getRandomCharacter');
         $reflectionMethod->setAccessible(true);
-        self::assertContains($reflectionMethod->invoke($class, $chars), $chars);
+        
+        $result = $reflectionMethod->invoke($generator, $chars);
+        self::assertIsString($result);
+        self::assertContains($result, $chars);
     }
 }

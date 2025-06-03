@@ -9,150 +9,62 @@ class PolicyTest extends TestCase
     {
         $policy = new Policy();
 
-        self::assertEquals(Policy::MINIMUM_DIGITS, $policy->getMinimumDigits());
-        self::assertEquals(Policy::MINIMUM_LENGTH, $policy->getMinimumLength());
-        self::assertEquals(2, $policy->getMinimumLetters());
-        self::assertEquals(Policy::MINIMUM_LOWERCASE, $policy->getMinimumLowercase());
-        self::assertEquals(Policy::MINIMUM_SPECIAL_CHARS, $policy->getMinimumSpecialChars());
-        self::assertEquals(Policy::MINIMUM_UPPERCASE, $policy->getMinimumUppercase());
+        self::assertEquals(8, $policy->getMinimumLength());
+        self::assertEquals(20, $policy->getMaximumLength());
+        self::assertEquals(3, $policy->getMinimumCharacterTypes());
+        self::assertFalse($policy->areRepeatedCharactersAllowed());
+        self::assertFalse($policy->areSequentialCharactersAllowed());
+        self::assertFalse($policy->areCommonPatternsAllowed());
     }
 
-    public function testDigitsNotRequired(): void
+    public function testCustomValues(): void
     {
-        $policy = new Policy([
-            'minimumDigits' => 0
-        ]);
+        $policy = new Policy(
+            minimumLength: 12,
+            maximumLength: 30,
+            minimumCharacterTypes: 4,
+            allowRepeatedCharacters: true,
+            allowSequentialCharacters: true,
+            allowCommonPatterns: true
+        );
 
-        self::assertEquals(0, $policy->getMinimumDigits());
-    }
-
-    public function testLowercaseNotRequired(): void
-    {
-        $policy = new Policy([
-            'minimumLowercase' => 0
-        ]);
-
-        self::assertEquals(1, $policy->getMinimumLetters());
-        self::assertEquals(0, $policy->getMinimumLowercase());
-    }
-
-    public function testUppercaseNotRequired(): void
-    {
-        $policy = new Policy([
-            'minimumUppercase' => 0
-        ]);
-
-        self::assertEquals(1, $policy->getMinimumLetters());
-        self::assertEquals(0, $policy->getMinimumUppercase());
-    }
-
-    public function testSpecialCharsNotRequired(): void
-    {
-        $policy = new Policy([
-            'minimumSpecialChars' => 0
-        ]);
-
-        self::assertEquals(0, $policy->getMinimumSpecialChars());
-    }
-
-    public function dataProviderForMinLetters(): array
-    {
-        return [
-            [0, 0, 0],
-            [1, 0, 1],
-            [0, 1, 1],
-            [1, 1, 2],
-        ];
-    }
-
-    /**
-     * @dataProvider dataProviderForMinLetters
-     *
-     * @param $lower
-     * @param $upper
-     * @param $total
-     */
-    public function testMinimumLettersNeverLessThanTotalLetters(int $lower, int $upper, int $total): void
-    {
-        $policy = new Policy([
-            'minimumLetters' => 0,
-            'minimumLowercase' => $upper,
-            'minimumUppercase' => $lower,
-        ]);
-
-        self::assertEquals($total, $policy->getMinimumLetters());
-    }
-
-    public function dataProviderForMinLength(): array
-    {
-        return [
-            [0, 0, 0, 0, 0, Policy::MINIMUM_LENGTH],
-            [1, 1, 1, 1, 1, Policy::MINIMUM_LENGTH],
-            [2, 2, 2, 2, 2, Policy::MINIMUM_LENGTH],
-            [1, 2, 3, 2, 3, Policy::MINIMUM_LENGTH],
-            [2, 3, 3, 3, 3, 12],
-            [6, 1, 1, 3, 3, 12],
-        ];
-    }
-
-    /**
-     * @dataProvider dataProviderForMinLength
-     *
-     * @param int $letters
-     * @param int $lower
-     * @param int $upper
-     * @param int $digits
-     * @param int $special
-     * @param int $total
-     */
-    public function testMinimumLengthNeverLessThanTotalChars(int $letters, int $lower, int $upper, int $digits, int $special, int $total): void
-    {
-        $policy = new Policy([
-            'minimumLetters' => $letters,
-            'minimumDigits' => $digits,
-            'minimumLowercase' => $upper,
-            'minimumUppercase' => $lower,
-            'minimumSpecialChars' => $special
-        ]);
-
-        self::assertEquals($total, $policy->getMinimumLength());
-    }
-
-    public function testNegativeValues(): void
-    {
-        $policy = new Policy([
-            'minimumLetters' => -5,
-            'minimumLength' => -12,
-            'minimumDigits' => -2,
-            'minimumLowercase' => -2,
-            'minimumUppercase' => -2,
-            'minimumSpecialChars' => -2
-        ]);
-
-        self::assertEquals(2, $policy->getMinimumDigits());
         self::assertEquals(12, $policy->getMinimumLength());
-        self::assertEquals(5, $policy->getMinimumLetters());
-        self::assertEquals(2, $policy->getMinimumLowercase());
-        self::assertEquals(2, $policy->getMinimumSpecialChars());
-        self::assertEquals(2, $policy->getMinimumUppercase());
+        self::assertEquals(30, $policy->getMaximumLength());
+        self::assertEquals(4, $policy->getMinimumCharacterTypes());
+        self::assertTrue($policy->areRepeatedCharactersAllowed());
+        self::assertTrue($policy->areSequentialCharactersAllowed());
+        self::assertTrue($policy->areCommonPatternsAllowed());
     }
 
-    public function testFloatValues(): void
+    public function testMinimumLengthValidation(): void
     {
-        $policy = new Policy([
-            'minimumLetters' => 5.8,
-            'minimumLength' => 12.7,
-            'minimumDigits' => 2.6,
-            'minimumLowercase' => 2.5,
-            'minimumUppercase' => 2.4,
-            'minimumSpecialChars' => 2.3
-        ]);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Minimum length must be at least 8 characters');
+        
+        new Policy(minimumLength: 7);
+    }
 
-        self::assertEquals(2, $policy->getMinimumDigits());
-        self::assertEquals(12, $policy->getMinimumLength());
-        self::assertEquals(5, $policy->getMinimumLetters());
-        self::assertEquals(2, $policy->getMinimumLowercase());
-        self::assertEquals(2, $policy->getMinimumSpecialChars());
-        self::assertEquals(2, $policy->getMinimumUppercase());
+    public function testMaximumLengthValidation(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Maximum length must be greater than minimum length');
+        
+        new Policy(minimumLength: 10, maximumLength: 9);
+    }
+
+    public function testMinimumCharacterTypesValidation(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Minimum character types must be between 1 and 4');
+        
+        new Policy(minimumCharacterTypes: 5);
+    }
+
+    public function testMinimumCharacterTypesValidationZero(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Minimum character types must be between 1 and 4');
+        
+        new Policy(minimumCharacterTypes: 0);
     }
 }
