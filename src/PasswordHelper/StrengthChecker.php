@@ -95,7 +95,7 @@ class StrengthChecker
     {
         $length = strlen($password);
 
-        return match(true) {
+        return match (true) {
             $length < self::MIN_LENGTH => 0,
             $length >= self::MAX_LENGTH => 30,
             default => (int) (($length - self::MIN_LENGTH) / (self::MAX_LENGTH - self::MIN_LENGTH) * 30)
@@ -125,10 +125,18 @@ class StrengthChecker
     {
         $score = 0;
 
-        if (preg_match('/[A-Z]/', $password)) $score += 5;
-        if (preg_match('/[a-z]/', $password)) $score += 5;
-        if (preg_match('/\d/', $password)) $score += 5;
-        if (preg_match('/[^a-zA-Z\d]/', $password)) $score += 5;
+        if (preg_match('/[A-Z]/', $password)) {
+            $score += 5;
+        }
+        if (preg_match('/[a-z]/', $password)) {
+            $score += 5;
+        }
+        if (preg_match('/\d/', $password)) {
+            $score += 5;
+        }
+        if (preg_match('/[^a-zA-Z\d]/', $password)) {
+            $score += 5;
+        }
 
         return $score;
     }
@@ -254,10 +262,18 @@ class StrengthChecker
     {
         $charset = 0;
 
-        if (preg_match('/[a-z]/', $password)) $charset += 26;
-        if (preg_match('/[A-Z]/', $password)) $charset += 26;
-        if (preg_match('/\d/', $password)) $charset += 10;
-        if (preg_match('/[^a-zA-Z\d]/', $password)) $charset += 32;
+        if (preg_match('/[a-z]/', $password)) {
+            $charset += 26;
+        }
+        if (preg_match('/[A-Z]/', $password)) {
+            $charset += 26;
+        }
+        if (preg_match('/\d/', $password)) {
+            $charset += 10;
+        }
+        if (preg_match('/[^a-zA-Z\d]/', $password)) {
+            $charset += 32;
+        }
 
         return $charset;
     }

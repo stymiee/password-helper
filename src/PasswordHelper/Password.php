@@ -75,7 +75,7 @@ class Password
     {
         $score = $this->strengthChecker->checkStrength($password);
 
-        return match(true) {
+        return match (true) {
             $score < 20 => 'Very Weak',
             $score < 40 => 'Weak',
             $score < 60 => 'Fair',
@@ -129,9 +129,15 @@ class Password
     {
         $types = 0;
 
-        if (($config['minimumDigits'] ?? 1) > 0) $types++;
-        if (($config['minimumSpecialChars'] ?? 1) > 0) $types++;
-        if (($config['minimumUppercase'] ?? 1) > 0 || ($config['minimumLowercase'] ?? 1) > 0) $types++;
+        if (($config['minimumDigits'] ?? 1) > 0) {
+            $types++;
+        }
+        if (($config['minimumSpecialChars'] ?? 1) > 0) {
+            $types++;
+        }
+        if (($config['minimumUppercase'] ?? 1) > 0 || ($config['minimumLowercase'] ?? 1) > 0) {
+            $types++;
+        }
 
         return $types;
     }
