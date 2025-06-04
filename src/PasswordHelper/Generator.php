@@ -6,10 +6,10 @@ namespace PasswordHelper;
 
 /**
  * Generates secure random passwords based on specified requirements.
- * 
+ *
  * This class provides methods to generate passwords with various character types
  * and ensures they meet minimum security requirements.
- * 
+ *
  * @package PasswordHelper
  */
 class Generator
@@ -34,7 +34,7 @@ class Generator
         if ($this->minLength < 8) {
             throw new \InvalidArgumentException('Minimum length must be at least 8 characters');
         }
-        
+
         if ($this->maxLength < $this->minLength) {
             throw new \InvalidArgumentException('Maximum length must be greater than minimum length');
         }
@@ -81,19 +81,19 @@ class Generator
         }
 
         $chars = [];
-        
+
         if ($includeUppercase) {
             $chars = array_merge($chars, range('A', 'Z'));
         }
-        
+
         if ($includeLowercase) {
             $chars = array_merge($chars, range('a', 'z'));
         }
-        
+
         if ($includeNumbers) {
             $chars = array_merge($chars, array_map('strval', range(0, 9)));
         }
-        
+
         if ($includeSpecial) {
             $chars = array_merge($chars, str_split('!@#$%^&*()_+-=[]{}|;:,.<>?'));
         }
@@ -105,15 +105,15 @@ class Generator
         if ($includeUppercase) {
             $password .= $this->getRandomCharacter(range('A', 'Z'));
         }
-        
+
         if ($includeLowercase) {
             $password .= $this->getRandomCharacter(range('a', 'z'));
         }
-        
+
         if ($includeNumbers) {
             $password .= $this->getRandomCharacter(array_map('strval', range(0, 9)));
         }
-        
+
         if ($includeSpecial) {
             $password .= $this->getRandomCharacter(str_split('!@#$%^&*()_+-=[]{}|;:,.<>?'));
         }

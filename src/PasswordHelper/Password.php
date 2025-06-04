@@ -6,10 +6,10 @@ namespace PasswordHelper;
 
 /**
  * Facade class that provides backward compatibility with the old API.
- * 
+ *
  * This class wraps the new implementation while maintaining the same
  * public interface as the original Password Helper.
- * 
+ *
  * @package PasswordHelper
  */
 class Password
@@ -74,7 +74,7 @@ class Password
     public function checkStrength(string $password): string
     {
         $score = $this->strengthChecker->checkStrength($password);
-        
+
         return match(true) {
             $score < 20 => 'Very Weak',
             $score < 40 => 'Weak',
@@ -128,11 +128,11 @@ class Password
     private function calculateMinimumCharacterTypes(array $config): int
     {
         $types = 0;
-        
+
         if (($config['minimumDigits'] ?? 1) > 0) $types++;
         if (($config['minimumSpecialChars'] ?? 1) > 0) $types++;
         if (($config['minimumUppercase'] ?? 1) > 0 || ($config['minimumLowercase'] ?? 1) > 0) $types++;
-        
+
         return $types;
     }
 }

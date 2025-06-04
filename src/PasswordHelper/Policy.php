@@ -6,10 +6,10 @@ namespace PasswordHelper;
 
 /**
  * Defines password policy requirements and constraints.
- * 
+ *
  * This class encapsulates all the rules and requirements that passwords
  * must meet to be considered valid according to the policy.
- * 
+ *
  * @package PasswordHelper
  */
 class Policy
@@ -28,11 +28,11 @@ class Policy
         if ($this->minimumLength < 8) {
             throw new \InvalidArgumentException('Minimum length must be at least 8 characters');
         }
-        
+
         if ($this->maximumLength < $this->minimumLength) {
             throw new \InvalidArgumentException('Maximum length must be greater than minimum length');
         }
-        
+
         if ($this->minimumCharacterTypes < 1 || $this->minimumCharacterTypes > 4) {
             throw new \InvalidArgumentException('Minimum character types must be between 1 and 4');
         }

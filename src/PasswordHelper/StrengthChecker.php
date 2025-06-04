@@ -6,11 +6,11 @@ namespace PasswordHelper;
 
 /**
  * Evaluates and rates the strength of passwords using a comprehensive scoring system.
- * 
+ *
  * This class provides methods to assess password strength based on various factors
  * including length, character variety, complexity, and entropy. The strength is
  * scored on a scale from 1 to 100, with higher scores indicating stronger passwords.
- * 
+ *
  * @package PasswordHelper
  */
 class StrengthChecker
@@ -57,13 +57,13 @@ class StrengthChecker
 
     /**
      * Evaluates and returns the strength score of a given password.
-     * 
+     *
      * The strength is calculated based on several factors:
      * - Length (up to 30 points)
      * - Character variety (up to 30 points)
      * - Complexity (up to 20 points)
      * - Entropy (up to 20 points)
-     * 
+     *
      * The final score is normalized to a 1-100 scale.
      *
      * @param string $password The password to evaluate
@@ -76,12 +76,12 @@ class StrengthChecker
         }
 
         $score = 0;
-        
+
         $score += $this->calculateLengthScore($password);
         $score += $this->calculateVarietyScore($password);
         $score += $this->calculateComplexityScore($password);
         $score += $this->calculateEntropyScore($password);
-        
+
         return min(100, max(1, $score));
     }
 
@@ -94,7 +94,7 @@ class StrengthChecker
     private function calculateLengthScore(string $password): int
     {
         $length = strlen($password);
-        
+
         return match(true) {
             $length < self::MIN_LENGTH => 0,
             $length >= self::MAX_LENGTH => 30,
@@ -124,12 +124,12 @@ class StrengthChecker
     private function getCharacterTypeScore(string $password): int
     {
         $score = 0;
-        
+
         if (preg_match('/[A-Z]/', $password)) $score += 5;
         if (preg_match('/[a-z]/', $password)) $score += 5;
         if (preg_match('/\d/', $password)) $score += 5;
         if (preg_match('/[^a-zA-Z\d]/', $password)) $score += 5;
-        
+
         return $score;
     }
 
@@ -157,7 +157,7 @@ class StrengthChecker
         $types += (int) preg_match('/[a-z]/', $password);
         $types += (int) preg_match('/\d/', $password);
         $types += (int) preg_match('/[^a-zA-Z\d]/', $password);
-        
+
         return ($types >= 3) ? 5 : 0;
     }
 
@@ -253,12 +253,12 @@ class StrengthChecker
     private function calculateCharsetSize(string $password): int
     {
         $charset = 0;
-        
+
         if (preg_match('/[a-z]/', $password)) $charset += 26;
         if (preg_match('/[A-Z]/', $password)) $charset += 26;
         if (preg_match('/\d/', $password)) $charset += 10;
         if (preg_match('/[^a-zA-Z\d]/', $password)) $charset += 32;
-        
+
         return $charset;
     }
 
@@ -317,13 +317,13 @@ class StrengthChecker
     private function hasCommonPattern(string $password): bool
     {
         $password = strtolower($password);
-        
+
         foreach (self::COMMON_PATTERNS as $pattern) {
             if (str_contains($password, $pattern)) {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -340,7 +340,7 @@ class StrengthChecker
                 return true;
             }
         }
-        
+
         return false;
     }
 }

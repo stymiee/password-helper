@@ -6,10 +6,10 @@ namespace PasswordHelper;
 
 /**
  * Validates passwords against a set of policy requirements.
- * 
+ *
  * This class provides methods to check if passwords meet various security
  * requirements such as minimum length, character types, and complexity rules.
- * 
+ *
  * @package PasswordHelper
  */
 class Validator
@@ -69,10 +69,18 @@ class Validator
     {
         $types = 0;
         
-        if (preg_match('/[A-Z]/', $password)) $types++;
-        if (preg_match('/[a-z]/', $password)) $types++;
-        if (preg_match('/\d/', $password)) $types++;
-        if (preg_match('/[^a-zA-Z\d]/', $password)) $types++;
+        if (preg_match('/[A-Z]/', $password)) {
+            $types++;
+        }
+        if (preg_match('/[a-z]/', $password)) {
+            $types++;
+        }
+        if (preg_match('/\d/', $password)) {
+            $types++;
+        }
+        if (preg_match('/[^a-zA-Z\d]/', $password)) {
+            $types++;
+        }
         
         return $types;
     }
