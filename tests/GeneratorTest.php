@@ -104,4 +104,63 @@ class GeneratorTest extends TestCase
         self::assertIsString($result);
         self::assertContains($result, $chars);
     }
+
+    public function testBuildCharacterPool(): void
+    {
+        $generator = new Generator();
+        $reflectionMethod = new \ReflectionMethod(Generator::class, 'buildCharacterPool');
+        $reflectionMethod->setAccessible(true);
+
+        // Test with all character types
+        $chars = $reflectionMethod->invoke($generator, true, true, true, true);
+        self::assertContains('A', $chars);
+        self::assertContains('a', $chars);
+        self::assertContains('0', $chars);
+        self::assertContains('!', $chars);
+
+        // Test with only uppercase and numbers
+        $chars = $reflectionMethod->invoke($generator, true, false, true, false);
+        self::assertContains('A', $chars);
+        self::assertNotContains('a', $chars);
+        self::assertContains('0', $chars);
+        self::assertNotContains('!', $chars);
+    }
+
+    public function testGenerateRequiredCharacters(): void
+    {
+        $generator = new Generator();
+        $reflectionMethod = new \ReflectionMethod(Generator::class, 'generateRequiredCharacters');
+        $reflectionMethod->setAccessible(true);
+
+        // Test with all character types
+        $password = $reflectionMethod->invoke($generator, true, true, true, true);
+        self::assertEquals(4, strlen($password));
+        self::assertRegExp('/[A-Z]/', $password);
+        self::assertRegExp('/[a-z]/', $password);
+        self::assertRegExp('/\d/', $password);
+        self::assertRegExp('/[^a-zA-Z\d]/', $password);
+
+        // Test with only uppercase and numbers
+        $password = $reflectionMethod->invoke($generator, true, false, true, false);
+        self::assertEquals(2, strlen($password));
+        self::assertRegExp('/[A-Z]/', $password);
+        self::assertNotRegExp('/[a-z]/', $password);
+        self::assertRegExp('/\d/', $password);
+        self::assertNotRegExp('/[^a-zA-Z\d]/', $password);
+    }
+
+    public function testFillRemainingCharacters(): void
+    {
+        $generator = new Generator();
+        $reflectionMethod = new \ReflectionMethod(Generator::class, 'fillRemainingCharacters');
+        $reflectionMethod->setAccessible(true);
+
+        $initialPassword = 'Ab1!';
+        $chars = array_merge(range('A', 'Z'), range('a', 'z'), array_map('strval', range(0, 9)), str_split('!@#$%^&*()_+-=[]{}|;:,.<>?'));
+        $length = 8;
+
+        $password = $reflectionMethod->invoke($generator, $initialPassword, $chars, $length);
+        self::assertEquals($length, strlen($password));
+        self::assertStringStartsWith($initialPassword, $password);
+    }
 }
