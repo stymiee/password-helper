@@ -11,9 +11,9 @@ A PHP library that makes using best practices with passwords easy _by default_.
 
 ## Requirements
 
-- PHP 7.2+ 
+- PHP 8.0+ 
 
-**Note**: There is a PHP 5 compatible version available. 
+**Note**: There is a PHP 5 compatible version available (v1.0.0). However, it is no longer maintained and does not contain the improved logic found in v2 and newer.
 
 ## Installation
 
@@ -24,15 +24,7 @@ Here is a minimal example of a `composer.json` file that just defines a dependen
 
     {
         "require": {
-            "stymiee/password-helper": "^2"
-        }
-    }
-
-To use the PHP 5 compatible version, use version 1.*:
-
-    {
-        "require": {
-            "stymiee/password-helper": "^1"
+            "stymiee/password-helper": "^3"
         }
     }
 
@@ -143,8 +135,8 @@ To remove a requirement give it a value of zero.
 
 ## Support
 
-If you require assistance using this library start by viewing the [HELP.md](HELP.md) file included in this package. It 
-includes common problems and their solutions.
+If you require assistance using this library, start by viewing the [HELP.md](HELP.md) file included in this package. It 
+includes common problems and their solutions. There is also sample usage in the `/examples/` directory of this project.
 
 If you need additional assistance, I can be found at Stack Overflow. Be sure when you
 [ask a question](http://stackoverflow.com/questions/ask?tags=php,password) pertaining to the usage of
